@@ -1,0 +1,56 @@
+version: "3.8"
+services:
+
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - /home/mongo:/data/db
+    environment:
+      - VISUALIZER_TASK=true
+      - VISUALIZER_TASK_AUTOSCALE=true
+    labels:
+      - visualizer.autoscale.min=1
+      - visualizer.autoscale.max=5
+      - visualizer.autoscale.up.cpu=0.3
+      - visualizer.autoscale.down.cpu=0.2
+
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    depends_on:
+      - mongodb
+  
+  backend:
+    image: backend
+    ports:
+      - 5000:5000
+    environment:
+      - VISUALIZER_TASK=true
+      - VISUALIZER_TASK_AUTOSCALE=true
+    labels:
+      - visualizer.autoscale.min=1
+      - visualizer.autoscale.max=5
+      - visualizer.autoscale.up.cpu=0.3
+      - visualizer.autoscale.down.cpu=0.2
+
+  frontend:
+    image: frontend
+    ports:
+      - 80:80
+    environment:
+      - VISUALIZER_TASK=true
+      - VISUALIZER_TASK_AUTOSCALE=true
+    labels:
+      - visualizer.autoscale.min=1
+      - visualizer.autoscale.max=5
+      - visualizer.autoscale.up.cpu=0.3
+      - visualizer.autoscale.down.cpu=0.2 
+   
+networks:
+  default:
+        name: mongo-network
